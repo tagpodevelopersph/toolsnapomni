@@ -84,6 +84,8 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         
+        <meta name="google-adsense-account" content="ca-pub-4388013707550348" />
+
         {/* Preconnect to improve performance */}
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
