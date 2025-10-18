@@ -75,8 +75,13 @@
 }
 
 @theme inline {
+<<<<<<< HEAD
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+=======
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+>>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

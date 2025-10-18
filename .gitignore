@@ -24,4 +24,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+<<<<<<< HEAD
 next-env.d.ts
+=======
+next-env.d.ts
+.vercel
+>>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
