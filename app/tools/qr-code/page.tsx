@@ -1,15 +1,33 @@
-import type { Metadata } from "next"
+'use client'
+
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export const metadata: Metadata = {
-  title: "Free QR Code Generator - Create Custom QR Codes | ToolSnap Omni",
-  description:
-    "Generate QR codes for URLs, text, contact information, and WiFi networks. Customize colors, sizes, and download as PNG or SVG.",
-  keywords: "QR code generator, QR code creator, custom QR codes, free QR code",
-}
-
 export default function QRCodePage() {
+  const [qrType, setQrType] = useState("URL")
+  const [content, setContent] = useState("")
+  const [size, setSize] = useState("400")
+  const [qrGenerated, setQrGenerated] = useState(false)
+
+  const handleGenerate = () => {
+    if (content.trim()) {
+      setQrGenerated(true)
+    } else {
+      alert("Please enter content for the QR code")
+    }
+  }
+
+  const handleDownload = () => {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(content)}`
+    const link = document.createElement("a")
+    link.href = qrUrl
+    link.download = "qrcode.png"
+    link.click()
+  }
+
+  const qrUrl = qrGenerated ? `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(content)}` : ""
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -58,19 +76,23 @@ export default function QRCodePage() {
 
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2">QR Code Type</label>
-              <select className="w-full border border-border rounded-lg p-2 bg-background text-foreground">
+              <select 
+                value={qrType}
+                onChange={(e) => setQrType(e.target.value)}
+                className="w-full border border-border rounded-lg p-2 bg-background text-foreground"
+              >
                 <option>URL</option>
                 <option>Text</option>
                 <option>Email</option>
                 <option>Phone</option>
-                <option>WiFi</option>
-                <option>vCard</option>
               </select>
             </div>
 
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2">Content</label>
               <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
                 className="w-full border border-border rounded-lg p-3 bg-background text-foreground"
                 rows={4}
                 placeholder="Enter URL, text, or other content"
@@ -80,25 +102,46 @@ export default function QRCodePage() {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="block text-sm font-medium mb-2">Size</label>
-                <select className="w-full border border-border rounded-lg p-2 bg-background text-foreground">
-                  <option>Small (200x200)</option>
-                  <option>Medium (400x400)</option>
-                  <option>Large (600x600)</option>
-                  <option>Extra Large (1000x1000)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Format</label>
-                <select className="w-full border border-border rounded-lg p-2 bg-background text-foreground">
-                  <option>PNG</option>
-                  <option>SVG</option>
-                  <option>JPG</option>
+                <select 
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  className="w-full border border-border rounded-lg p-2 bg-background text-foreground"
+                >
+                  <option value="200">Small (200x200)</option>
+                  <option value="400">Medium (400x400)</option>
+                  <option value="600">Large (600x600)</option>
+                  <option value="1000">Extra Large (1000x1000)</option>
                 </select>
               </div>
             </div>
 
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">Generate QR Code</Button>
+            <Button 
+              onClick={handleGenerate}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Generate QR Code
+            </Button>
           </div>
+
+          {/* QR Code Display */}
+          {qrGenerated && content && (
+            <div className="bg-card border border-border rounded-lg p-8 mb-12 text-center">
+              <h3 className="text-xl font-bold mb-6">Your QR Code</h3>
+              <div className="flex justify-center mb-6 bg-white p-4 rounded-lg">
+                <img 
+                  src={qrUrl} 
+                  alt="Generated QR Code"
+                  style={{ width: `${size}px`, height: `${size}px` }}
+                />
+              </div>
+              <Button 
+                onClick={handleDownload}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Download QR Code
+              </Button>
+            </div>
+          )}
 
           {/* Features */}
           <div className="mb-12">
@@ -117,9 +160,9 @@ export default function QRCodePage() {
               <div className="flex gap-4">
                 <div className="text-2xl">🎨</div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Full Customization</h3>
+                  <h3 className="font-semibold text-foreground mb-1">Multiple Sizes</h3>
                   <p className="text-muted-foreground">
-                    Customize colors, add logos, and adjust error correction levels to match your brand identity.
+                    Choose from small to extra large sizes. Download as PNG for any use case.
                   </p>
                 </div>
               </div>
@@ -128,16 +171,16 @@ export default function QRCodePage() {
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Multiple Data Types</h3>
                   <p className="text-muted-foreground">
-                    Support for URLs, text, emails, phone numbers, WiFi credentials, and vCard contact information.
+                    Support for URLs, text, emails, phone numbers, and more.
                   </p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="text-2xl">⚙️</div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Error Correction</h3>
+                  <h3 className="font-semibold text-foreground mb-1">High Error Correction</h3>
                   <p className="text-muted-foreground">
-                    QR codes remain scannable even if partially damaged or obscured. Choose your error correction level.
+                    QR codes remain scannable even if partially damaged or obscured.
                   </p>
                 </div>
               </div>

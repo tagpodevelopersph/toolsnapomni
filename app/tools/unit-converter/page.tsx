@@ -1,21 +1,101 @@
-import type { Metadata } from "next"
+'use client'
+
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export const metadata: Metadata = {
-  title: "Free Unit Converter - Convert Length, Weight, Temperature | ToolSnap Omni",
-  description:
-    "Convert between various units of measurement including length, weight, temperature, volume, and more. Instant and accurate conversions.",
-  keywords: "unit converter, length converter, weight converter, temperature converter, measurement converter",
-}
-
 export default function UnitConverterPage() {
-  const conversionCategories = [
-    { name: "Length", units: ["Meter", "Kilometer", "Centimeter", "Millimeter", "Mile", "Yard", "Foot", "Inch"] },
-    { name: "Weight", units: ["Kilogram", "Gram", "Milligram", "Pound", "Ounce", "Ton", "Stone"] },
-    { name: "Temperature", units: ["Celsius", "Fahrenheit", "Kelvin"] },
-    { name: "Volume", units: ["Liter", "Milliliter", "Gallon", "Quart", "Pint", "Cup", "Fluid Ounce"] },
-  ]
+  const [conversionType, setConversionType] = useState("Length")
+  const [fromValue, setFromValue] = useState("")
+  const [toValue, setToValue] = useState("")
+  const [fromUnit, setFromUnit] = useState("Meter")
+  const [toUnit, setToUnit] = useState("Foot")
+
+  const conversionCategories: Record<string, { units: string[]; factors: Record<string, number> }> = {
+    Length: {
+      units: ["Meter", "Kilometer", "Centimeter", "Millimeter", "Mile", "Yard", "Foot", "Inch"],
+      factors: {
+        Meter: 1,
+        Kilometer: 1000,
+        Centimeter: 0.01,
+        Millimeter: 0.001,
+        Mile: 1609.34,
+        Yard: 0.9144,
+        Foot: 0.3048,
+        Inch: 0.0254,
+      },
+    },
+    Weight: {
+      units: ["Kilogram", "Gram", "Milligram", "Pound", "Ounce", "Ton", "Stone"],
+      factors: {
+        Kilogram: 1,
+        Gram: 0.001,
+        Milligram: 0.000001,
+        Pound: 0.453592,
+        Ounce: 0.0283495,
+        Ton: 1000,
+        Stone: 6.35029,
+      },
+    },
+    Temperature: {
+      units: ["Celsius", "Fahrenheit", "Kelvin"],
+      factors: {},
+    },
+    Volume: {
+      units: ["Liter", "Milliliter", "Gallon", "Quart", "Pint", "Cup", "Fluid Ounce"],
+      factors: {
+        Liter: 1,
+        Milliliter: 0.001,
+        Gallon: 3.78541,
+        Quart: 0.946353,
+        Pint: 0.473176,
+        Cup: 0.236588,
+        "Fluid Ounce": 0.0295735,
+      },
+    },
+  }
+
+  const handleConvert = () => {
+    if (!fromValue || fromValue === "0") {
+      setToValue("")
+      return
+    }
+
+    const num = parseFloat(fromValue)
+
+    if (conversionType === "Temperature") {
+      let celsius = 0
+
+      if (fromUnit === "Celsius") celsius = num
+      else if (fromUnit === "Fahrenheit") celsius = (num - 32) * (5 / 9)
+      else if (fromUnit === "Kelvin") celsius = num - 273.15
+
+      let result = 0
+      if (toUnit === "Celsius") result = celsius
+      else if (toUnit === "Fahrenheit") result = celsius * (9 / 5) + 32
+      else if (toUnit === "Kelvin") result = celsius + 273.15
+
+      setToValue(result.toFixed(4))
+    } else {
+      const factors = conversionCategories[conversionType].factors
+      const fromFactor = factors[fromUnit as keyof typeof factors]
+      const toFactor = factors[toUnit as keyof typeof factors]
+
+      const result = (num * fromFactor) / toFactor
+      setToValue(result.toFixed(6))
+    }
+  }
+
+  const handleConversionTypeChange = (type: string) => {
+    setConversionType(type)
+    const units = conversionCategories[type].units
+    setFromUnit(units[0])
+    setToUnit(units[1] || units[0])
+    setFromValue("")
+    setToValue("")
+  }
+
+  const currentUnits = conversionCategories[conversionType].units
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,7 +145,11 @@ export default function UnitConverterPage() {
 
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2">Conversion Type</label>
-              <select className="w-full border border-border rounded-lg p-2 bg-background text-foreground">
+              <select 
+                value={conversionType}
+                onChange={(e) => handleConversionTypeChange(e.target.value)}
+                className="w-full border border-border rounded-lg p-2 bg-background text-foreground"
+              >
                 <option>Length</option>
                 <option>Weight</option>
                 <option>Temperature</option>
@@ -79,13 +163,31 @@ export default function UnitConverterPage() {
                 <div className="flex gap-2">
                   <input
                     type="number"
+                    value={fromValue}
+                    onChange={(e) => {
+                      setFromValue(e.target.value)
+                      if (e.target.value) {
+                        handleConvert()
+                      } else {
+                        setToValue("")
+                      }
+                    }}
                     className="flex-1 border border-border rounded-lg p-2 bg-background text-foreground"
                     placeholder="Enter value"
                   />
-                  <select className="border border-border rounded-lg p-2 bg-background text-foreground">
-                    <option>Meter</option>
-                    <option>Kilometer</option>
-                    <option>Mile</option>
+                  <select 
+                    value={fromUnit}
+                    onChange={(e) => {
+                      setFromUnit(e.target.value)
+                      if (fromValue) handleConvert()
+                    }}
+                    className="border border-border rounded-lg p-2 bg-background text-foreground"
+                  >
+                    {currentUnits.map((unit) => (
+                      <option key={unit} value={unit}>
+                        {unit}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -94,31 +196,46 @@ export default function UnitConverterPage() {
                 <div className="flex gap-2">
                   <input
                     type="number"
+                    value={toValue}
                     className="flex-1 border border-border rounded-lg p-2 bg-background text-foreground"
                     placeholder="Result"
                     disabled
                   />
-                  <select className="border border-border rounded-lg p-2 bg-background text-foreground">
-                    <option>Foot</option>
-                    <option>Inch</option>
-                    <option>Yard</option>
+                  <select 
+                    value={toUnit}
+                    onChange={(e) => {
+                      setToUnit(e.target.value)
+                      if (fromValue) handleConvert()
+                    }}
+                    className="border border-border rounded-lg p-2 bg-background text-foreground"
+                  >
+                    {currentUnits.map((unit) => (
+                      <option key={unit} value={unit}>
+                        {unit}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
             </div>
 
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">Convert</Button>
+            <Button 
+              onClick={handleConvert}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Convert
+            </Button>
           </div>
 
           {/* Supported Units */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-6">Supported Conversion Categories</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {conversionCategories.map((category) => (
-                <div key={category.name} className="bg-card border border-border rounded-lg p-6">
-                  <h3 className="font-semibold text-lg mb-4 text-foreground">{category.name}</h3>
+              {Object.entries(conversionCategories).map(([category, data]) => (
+                <div key={category} className="bg-card border border-border rounded-lg p-6">
+                  <h3 className="font-semibold text-lg mb-4 text-foreground">{category}</h3>
                   <div className="flex flex-wrap gap-2">
-                    {category.units.map((unit) => (
+                    {data.units.map((unit) => (
                       <span key={unit} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
                         {unit}
                       </span>

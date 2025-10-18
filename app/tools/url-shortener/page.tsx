@@ -1,15 +1,72 @@
-import type { Metadata } from "next"
+'use client'
+
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export const metadata: Metadata = {
-  title: "Free URL Shortener - Shorten Long Links | ToolSnap Omni",
-  description:
-    "Shorten long URLs for easy sharing on social media. Track clicks, customize short links, and manage your URLs.",
-  keywords: "URL shortener, link shortener, short URL, custom short links",
-}
+// In-memory storage for shortened URLs
+const urlMap = new Map<string, string>()
 
 export default function URLShortenerPage() {
+  const [longUrl, setLongUrl] = useState("")
+  const [customName, setCustomName] = useState("")
+  const [shortUrl, setShortUrl] = useState("")
+  const [showResult, setShowResult] = useState(false)
+  const [copySuccess, setCopySuccess] = useState(false)
+  const [savedUrls, setSavedUrls] = useState<Array<{ short: string; long: string }>>([])
+
+  const generateRandomCode = () => {
+    return Math.random().toString(36).substring(2, 8)
+  }
+
+  const handleShortenUrl = () => {
+    if (!longUrl.trim()) {
+      alert("Please enter a URL")
+      return
+    }
+
+    let shortCode = ""
+    if (customName.trim()) {
+      const sanitized = customName.replace(/[^a-z0-9-]/gi, "").toLowerCase()
+      if (urlMap.has(sanitized)) {
+        alert("This custom name is already in use. Please choose another.")
+        return
+      }
+      shortCode = sanitized
+    } else {
+      shortCode = generateRandomCode()
+    }
+
+    // Store the mapping in memory
+    urlMap.set(shortCode, longUrl)
+
+    const shortened = `snap.link/${shortCode}`
+    setShortUrl(shortened)
+    setShowResult(true)
+    setCopySuccess(false)
+
+    // Add to saved URLs list
+    setSavedUrls([{ short: shortened, long: longUrl }, ...savedUrls])
+
+    // Reset inputs
+    setLongUrl("")
+    setCustomName("")
+  }
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(shortUrl)
+    setCopySuccess(true)
+    setTimeout(() => setCopySuccess(false), 2000)
+  }
+
+  const handleOpenShortUrl = (short: string) => {
+    const code = short.replace("snap.link/", "")
+    const original = urlMap.get(code)
+    if (original) {
+      window.open(original, "_blank")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -54,30 +111,90 @@ export default function URLShortenerPage() {
           {/* Shortener Tool */}
           <div id="shortener" className="bg-card border border-border rounded-lg p-8 mb-12">
             <h2 className="text-2xl font-bold mb-6">Shorten Your URL</h2>
-
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2">Long URL</label>
               <input
                 type="url"
+                value={longUrl}
+                onChange={(e) => setLongUrl(e.target.value)}
                 className="w-full border border-border rounded-lg p-3 bg-background text-foreground"
                 placeholder="https://example.com/very/long/url/that/needs/shortening"
               />
             </div>
-
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2">Custom Short Link (Optional)</label>
               <div className="flex gap-2">
                 <span className="flex items-center px-3 bg-muted text-muted-foreground rounded-lg">snap.link/</span>
                 <input
                   type="text"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value.replace(/[^a-z0-9-]/gi, ""))}
                   className="flex-1 border border-border rounded-lg p-3 bg-background text-foreground"
                   placeholder="custom-name"
                 />
               </div>
+              <p className="text-xs text-muted-foreground mt-2">Leave empty for a random short code</p>
             </div>
-
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">Shorten URL</Button>
+            <Button 
+              onClick={handleShortenUrl}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Shorten URL
+            </Button>
           </div>
+
+          {/* Result Display */}
+          {showResult && (
+            <div className="bg-card border border-border rounded-lg p-8 mb-12">
+              <h3 className="text-xl font-bold mb-4">Your Shortened URL</h3>
+              <div className="bg-muted rounded-lg p-4 mb-4">
+                <p className="text-sm text-muted-foreground mb-2">Shortened Link:</p>
+                <p className="text-lg font-mono font-bold text-foreground break-all">{shortUrl}</p>
+              </div>
+              <div className="bg-muted rounded-lg p-4 mb-6">
+                <p className="text-sm text-muted-foreground mb-2">Original URL:</p>
+                <p className="text-sm font-mono text-foreground break-all">{longUrl}</p>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleCopyToClipboard}
+                  className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  {copySuccess ? "Copied!" : "Copy Short Link"}
+                </Button>
+                <Button 
+                  onClick={() => handleOpenShortUrl(shortUrl)}
+                  className="flex-1 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                >
+                  Open Link
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Saved URLs */}
+          {savedUrls.length > 0 && (
+            <div className="bg-card border border-border rounded-lg p-8 mb-12">
+              <h3 className="text-xl font-bold mb-4">Your Shortened URLs</h3>
+              <div className="space-y-4">
+                {savedUrls.map((item, index) => (
+                  <div key={index} className="border border-border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-mono font-bold text-primary">{item.short}</p>
+                      <Button 
+                        onClick={() => handleOpenShortUrl(item.short)}
+                        size="sm"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        Open
+                      </Button>
+                    </div>
+                    <p className="text-sm text-muted-foreground break-all">→ {item.long}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Benefits */}
           <div className="mb-12">
@@ -96,10 +213,10 @@ export default function URLShortenerPage() {
               <div className="flex gap-4">
                 <div className="text-2xl">📊</div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Click Tracking & Analytics</h3>
+                  <h3 className="font-semibold text-foreground mb-1">Easy Sharing</h3>
                   <p className="text-muted-foreground">
-                    Monitor how many people click your links and when. Valuable data for marketing campaigns and content
-                    strategy.
+                    Share links in messages, emails, and texts without cluttering your content. Short URLs are more
+                    professional and easier to type.
                   </p>
                 </div>
               </div>
@@ -137,24 +254,23 @@ export default function URLShortenerPage() {
                 </p>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <h3 className="font-semibold text-foreground mb-2">Track Your Links</h3>
+                <h3 className="font-semibold text-foreground mb-2">Keep Custom Names Short</h3>
                 <p className="text-muted-foreground">
-                  Monitor click-through rates to understand which links perform best. Use this data to optimize your
-                  marketing strategy.
+                  The shorter your custom name, the shorter the overall link. Use hyphens to separate words for
+                  readability.
                 </p>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
                 <h3 className="font-semibold text-foreground mb-2">Test Before Sharing</h3>
                 <p className="text-muted-foreground">
-                  Always click your shortened link to verify it works correctly before sharing it widely on social media
-                  or in campaigns.
+                  Always verify your shortened link works correctly before sharing it widely on social media or in
+                  campaigns.
                 </p>
               </div>
               <div className="bg-card border border-border rounded-lg p-4">
-                <h3 className="font-semibold text-foreground mb-2">Avoid Suspicious Patterns</h3>
+                <h3 className="font-semibold text-foreground mb-2">Note: Session-Based Storage</h3>
                 <p className="text-muted-foreground">
-                  Don't use shortened links that look suspicious or misleading. Users are less likely to click links
-                  they don't trust.
+                  Links are stored in memory during your session. Refreshing the page will clear all mappings. For production use, a database is recommended.
                 </p>
               </div>
             </div>
