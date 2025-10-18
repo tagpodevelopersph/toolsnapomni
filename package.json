@@ -5,11 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-<<<<<<< HEAD
-    "lint": "eslint .",
-=======
     "lint": "next lint",
->>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
     "start": "next start"
   },
   "dependencies": {
@@ -48,16 +44,6 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
-<<<<<<< HEAD
-    "input-otp": "1.4.1",
-    "lucide-react": "^0.454.0",
-    "next": "15.2.4",
-    "next-themes": "^0.4.6",
-    "react": "^19",
-    "react-day-picker": "9.8.0",
-    "react-dom": "^19",
-    "react-hook-form": "^7.60.0",
-=======
     "geist": "latest",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
@@ -68,36 +54,22 @@
     "react-dom": "^18",
     "react-hook-form": "^7.60.0",
     "react-icons": "^5.5.0",
->>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.4",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",
-<<<<<<< HEAD
-    "zod": "3.25.76"
-=======
     "zod": "3.25.67"
->>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
-<<<<<<< HEAD
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-=======
     "@types/react": "^18",
     "@types/react-dom": "^18",
->>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
     "typescript": "^5"
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 21447ab113fc3597b8d0f8e46447c9fe12cfa53e
