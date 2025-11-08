@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { X, Zap, Copy, Check, ChevronDown } from "lucide-react"
-import AdBanner from "@/components/AdBanner"
 
 type Tool =
   | "timezone"
@@ -114,7 +113,7 @@ export default function Page() {
     {
       question: "How are you making money if it's free?",
       answer:
-        "We believe in building quality tools first. Currently, toolsnapomni is maintained as a free service. Future monetization may include optional premium features. Also, we currently run google ads on our website.",
+        "We believe in building quality tools first. Currently, toolsnapomni is maintained as a free service. Future monetization may include optional premium features.",
     },
     {
       question: "What browsers are supported?",
@@ -416,23 +415,49 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
   ]
 
   const copyToClipboard = (text: string) => {
-    try {
-      const sanitized = text.trim()
-      if (typeof sanitized !== "string") {
-        console.error("[Security] Invalid clipboard content type")
-        return
-      }
-      navigator.clipboard.writeText(sanitized).then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      })
-    } catch (err) {
-      console.error("[Security] Clipboard error:", err)
-    }
+    const sanitized = text.trim()
+    navigator.clipboard.writeText(sanitized).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <Zap className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <h1 className="text-2xl font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              toolsnapomni
+            </h1>
+          </div>
+          <nav className="hidden md:flex items-center gap-8">
+            <a href="#tools" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              Tools
+            </a>
+            <a href="#blog" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              Blog
+            </a>
+            <a href="#tutorials" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              Tutorials
+            </a>
+            <a href="#faq" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              FAQ
+            </a>
+            <a href="#about" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              About
+            </a>
+            <a href="#contact" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+              Contact
+            </a>
+          </nav>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -445,12 +470,6 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
             Everything you need to boost your productivity in one place. From currency conversions to content analysis,
             we've got you covered with lightning-fast, accurate tools designed for modern professionals.
           </p>
-        </div>
-
-        <div className="mt-12 flex justify-center">
-          <div className="w-full max-w-2xl">
-            <AdBanner adClient="ca-pub-4388013707550348" adSlot="2304735028" />
-          </div>
         </div>
       </section>
 
@@ -468,9 +487,7 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/0 group-hover:from-accent/5 group-hover:to-accent/10 transition-all duration-300" />
                 <div className="relative z-10 space-y-3">
-                  <div className="text-4xl" role="img" aria-label={tool.name}>
-                    {tool.icon}
-                  </div>
+                  <div className="text-4xl">{tool.icon}</div>
                   <h4 className="font-semibold text-foreground group-hover:text-accent transition-colors">
                     {tool.name}
                   </h4>
@@ -511,12 +528,6 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
                 </div>
               </article>
             ))}
-          </div>
-        </div>
-
-        <div className="mt-12 flex justify-center">
-          <div className="w-full max-w-2xl">
-            <AdBanner adClient="ca-pub-4388013707550348" adSlot="5545427292" />
           </div>
         </div>
       </section>
@@ -579,7 +590,73 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
         <div className="max-w-4xl mx-auto">
           <h3 className="text-3xl font-bold mb-8 text-balance">About toolsnapomni</h3>
 
-          <div className="space-y-8"></div>
+          <div className="space-y-8">
+            <div>
+              <h4 className="text-2xl font-bold text-foreground mb-4">Our Mission</h4>
+              <p className="text-lg text-foreground/80 leading-relaxed">
+                We built toolsnapomni to eliminate productivity friction. Our mission is to provide one unified platform
+                where professionals, creators, and businesses can access fast, accurate, and reliable tools without
+                jumping between multiple websites. We believe that productivity tools should be simple, secure, and
+                always available—no sign-ups, no tracking, no complications.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-2xl font-bold text-foreground mb-4">Our Vision</h4>
+              <p className="text-lg text-foreground/80 leading-relaxed">
+                We envision a future where essential productivity tools are universally accessible, free, and built with
+                privacy at their core. Every professional should have instant access to reliable utilities that make
+                their work easier—whether they're managing global teams, running international businesses, or creating
+                content. toolsnapomni is the foundation of that vision.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-border">
+              <h4 className="text-2xl font-bold text-foreground mb-4">Built by Ace Candar</h4>
+              <p className="text-lg text-foreground/80 leading-relaxed">
+                I'm a Computer Science graduate with a passion for building tools that make people's lives easier. After
+                spending years jumping between different productivity apps, I realized there had to be a better way.
+                That realization sparked toolsnapomni—a place where everything you need lives in one spot, and your
+                privacy is guaranteed because nothing ever leaves your browser. When I'm not coding, you'll find me
+                exploring new productivity workflows, diving into the latest tech innovations, or brainstorming the next
+                tool that could save someone precious minutes every single day.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-border">
+              <h4 className="text-xl font-bold text-foreground mb-4">Why toolsnapomni Stands Out</h4>
+              <ul className="space-y-3 text-foreground/80">
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">✓</span>
+                  <span>
+                    <strong>Zero Data Collection:</strong> Everything happens in your browser. We never see, store, or
+                    track your data.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">✓</span>
+                  <span>
+                    <strong>No Sign-ups Required:</strong> Start using tools immediately. No registration, no email
+                    verification.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">✓</span>
+                  <span>
+                    <strong>Always Free:</strong> Core tools are and will always be free. Sustainability through
+                    simplicity.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent font-bold">✓</span>
+                  <span>
+                    <strong>Lightning Fast:</strong> Instant conversions, real-time validation, and zero lag. Speed is a
+                    feature.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -588,7 +665,48 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
         <div className="max-w-4xl mx-auto">
           <h3 className="text-3xl font-bold mb-8 text-balance">Get In Touch</h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="rounded-xl border border-border bg-card p-8">
+              <h4 className="text-xl font-bold text-foreground mb-4">Support & Questions</h4>
+              <p className="text-muted-foreground mb-6">
+                Have a question about how to use a tool? Need technical support? Our support team is here to help.
+              </p>
+              <a
+                href="mailto:help.linkrea@gmail.com"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground font-medium hover:bg-accent/90 transition-colors"
+              >
+                help.linkrea@gmail.com
+              </a>
+            </div>
+
+            <div className="rounded-xl border border-border bg-card p-8">
+              <h4 className="text-xl font-bold text-foreground mb-4">Business & Partnerships</h4>
+              <p className="text-muted-foreground mb-6">
+                Interested in partnerships, custom solutions, or business inquiries? Let's talk.
+              </p>
+              <a
+                href="mailto:linkrea.ph@gmail.com"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+              >
+                linkrea.ph@gmail.com
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-12 p-8 rounded-xl border border-border bg-card">
+            <h4 className="text-xl font-bold text-foreground mb-4">Response Times</h4>
+            <ul className="space-y-3 text-foreground/80">
+              <li>
+                <strong>Support Emails:</strong> Typically responded to within 24 hours during business days.
+              </li>
+              <li>
+                <strong>Feature Requests:</strong> We review all suggestions and may reach out with follow-up questions.
+              </li>
+              <li>
+                <strong>Bug Reports:</strong> Critical bugs are prioritized and fixed quickly.
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -733,8 +851,6 @@ Remember: Social media success isn't luck—it's strategy backed by data.`,
     </div>
   )
 }
-
-// ... existing component functions ...
 
 function TimeZoneConverter({ onCopy }: { onCopy: () => void }) {
   const [time, setTime] = useState(new Date().toISOString().split("T")[1].slice(0, 5))
@@ -920,10 +1036,6 @@ function URLShortener() {
   const generateShortUrl = () => {
     try {
       new URL(url)
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        alert("Please enter a valid URL starting with http:// or https://")
-        return
-      }
       const random = Math.random().toString(36).substring(2, 8)
       setShortUrl(`snapomni.co/${random}`)
     } catch {
@@ -985,12 +1097,12 @@ function EmailValidator() {
 
   const validateEmail = () => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const isValid = regex.test(email) && email.length <= 254 && email.length >= 6
+    const isValid = regex.test(email) && email.length <= 254
     setResult({
       valid: isValid,
       message: isValid
         ? "✓ Email is valid and properly formatted"
-        : "✗ Please enter a valid email address (6-254 characters)",
+        : "✗ Please enter a valid email address (max 254 characters)",
     })
   }
 
